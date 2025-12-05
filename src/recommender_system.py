@@ -83,6 +83,25 @@ class MovieRecommender:
             else:
                 negative_examples.append(features)
         
+        # Convert movie objects to feature dicts for clustering
+        rated_movies_features = [self._movie_to_features(m) for m in rated_movies]
+        
+        # Convert to feature dictionaries for learning
+        positive_examples = []
+        negative_examples = []
+        
+        for movie in rated_movies:
+            rating = user_movies.get(movie.movie_id, 5)
+            features = self._movie_to_features(movie)
+            
+            if rating >= 7.0:
+                positive_examples.append(features)
+            else:
+                negative_examples.append(features)
+        
+        # Convert movie objects to feature dicts for clustering
+        rated_movies_features = [self._movie_to_features(m) for m in rated_movies]
+        
         # Module 1: Learn preference concept
         if positive_examples and negative_examples:
             self.learned_concept = self.concept_learner.learn_preferences(
@@ -100,7 +119,8 @@ class MovieRecommender:
             self.rules = []
         
         # Module 3: Cluster movies and train ensemble
-        self.movie_clusterer.fit(rated_movies)
+        if rated_movies_features:
+            self.movie_clusterer.fit(rated_movies_features)
         self.ensemble_predictor.train(user_movies, self.dataset.movies)
         
         # Module 5: Learn probabilistic models

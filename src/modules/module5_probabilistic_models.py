@@ -31,7 +31,7 @@ class BayesianPreferenceNetwork:
         self.recommendation_prior = 0.5
     
     def learn_from_ratings(self, user_ratings: Dict[int, float], 
-                          movies: Dict[int, Dict]):
+                          movies: Dict[int, 'Movie']):
         """Learn Bayesian network from user's rating history."""
         
         if not user_ratings:
@@ -48,7 +48,8 @@ class BayesianPreferenceNetwork:
         for movie_id, rating in user_ratings.items():
             if movie_id in movies:
                 movie = movies[movie_id]
-                genres = movie.get('genres', [])
+                # Handle both Movie objects and dicts
+                genres = movie.genres if hasattr(movie, 'genres') else movie.get('genres', [])
                 
                 for genre in genres:
                     genre_total[genre] = genre_total.get(genre, 0) + 1
@@ -67,7 +68,7 @@ class BayesianPreferenceNetwork:
         for movie_id, rating in user_ratings.items():
             if movie_id in movies:
                 movie = movies[movie_id]
-                cast = movie.get('cast', [])
+                cast = movie.cast if hasattr(movie, 'cast') else movie.get('cast', [])
                 
                 for actor in cast:
                     actor_total[actor] = actor_total.get(actor, 0) + 1
@@ -78,16 +79,16 @@ class BayesianPreferenceNetwork:
             likes = actor_likes.get(actor, 0)
             self.actor_preference[actor] = (likes + 1) / (total + 2)
     
-    def infer_recommendation_probability(self, movie: Dict) -> float:
+    def infer_recommendation_probability(self, movie) -> float:
         """
         Use Bayesian inference to compute P(recommend | movie features)
         
         P(recommend | genres, cast) ∝ P(genres | recommend) * P(cast | recommend) * P(recommend)
         """
         
-        genres = movie.get('genres', [])
-        cast = movie.get('cast', [])
-        rating = movie.get('rating', 5.0)
+        genres = movie.genres if hasattr(movie, 'genres') else movie.get('genres', [])
+        cast = movie.cast if hasattr(movie, 'cast') else movie.get('cast', [])
+        rating = movie.rating if hasattr(movie, 'rating') else movie.get('rating', 5.0)
         
         # Start with prior
         prob = self.recommendation_prior

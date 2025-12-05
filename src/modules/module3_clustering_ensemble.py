@@ -157,13 +157,13 @@ class EnsemblePredictor:
         self.is_trained = False
     
     def _prepare_training_data(self, user_ratings: Dict[int, float], 
-                               movies: Dict[int, Dict], threshold: float = 7.0) -> Tuple[np.ndarray, np.ndarray]:
+                               movies: Dict[int, 'Movie'], threshold: float = 7.0) -> Tuple[np.ndarray, np.ndarray]:
         """
         Convert user ratings and movies to features and labels for training.
         
         Args:
             user_ratings: Dictionary of movie_id -> rating
-            movies: Dictionary of movie_id -> movie features
+            movies: Dictionary of movie_id -> movie object
             threshold: Rating threshold for positive class
         """
         X = []
@@ -172,13 +172,25 @@ class EnsemblePredictor:
         for movie_id, rating in user_ratings.items():
             if movie_id in movies:
                 movie = movies[movie_id]
-                features = [
-                    movie.get('rating', 5.0),
-                    len(movie.get('genres', [])),
-                    len(movie.get('cast', [])),
-                    len(movie.get('keywords', [])),
-                    movie.get('year', 2000),
-                ]
+                # Handle both dict and object types
+                if hasattr(movie, 'rating'):
+                    # It's a Movie object
+                    features = [
+                        movie.rating,
+                        len(movie.genres),
+                        len(movie.cast),
+                        len(movie.keywords),
+                        movie.year,
+                    ]
+                else:
+                    # It's a dict
+                    features = [
+                        movie.get('rating', 5.0),
+                        len(movie.get('genres', [])),
+                        len(movie.get('cast', [])),
+                        len(movie.get('keywords', [])),
+                        movie.get('year', 2000),
+                    ]
                 X.append(features)
                 y.append(1 if rating >= threshold else 0)
         
