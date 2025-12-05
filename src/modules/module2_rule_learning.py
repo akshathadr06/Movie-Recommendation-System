@@ -134,13 +134,21 @@ class RuleLearner:
             for key in ['genres', 'rating', 'cast', 'year']:
                 if key in example:
                     value = example[key]
+                    # Convert lists to tuples for hashability
+                    if isinstance(value, list):
+                        value = tuple(value)
                     conditions = {key: value}
                     rule = Rule(conditions, 'RECOMMEND', 0.0, 0.0)
-                    feature_sets.add(frozenset(conditions.items()))
+                    # Use frozenset with hashable items
+                    feature_tuple = tuple(sorted([(k, v if not isinstance(v, list) else tuple(v)) 
+                                                   for k, v in conditions.items()]))
+                    feature_sets.add(feature_tuple)
         
         # Create rules from feature combinations
         for features in feature_sets:
-            conditions = dict(features)
+            conditions = {}
+            for k, v in features:
+                conditions[k] = v if not isinstance(v, tuple) else list(v)
             rule = Rule(conditions, 'RECOMMEND', 0.0, 0.0)
             candidates.append(rule)
         
