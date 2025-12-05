@@ -23,7 +23,6 @@ class Movie:
 class User:
     """Represents a user with their preference history."""
     user_id: int
-    name: str
     rated_movies: Dict[int, float]  # movie_id -> rating given
 
 class MovieDataset:
@@ -93,16 +92,16 @@ def generate_sample_dataset():
     
     # Sample users with their ratings
     users_data = [
-        (1, "Alice", {1: 9, 2: 8.5, 3: 8, 8: 9, 12: 7}),
-        (2, "Bob", {4: 9, 9: 9, 5: 6, 7: 5, 11: 4}),
-        (3, "Charlie", {1: 8.5, 2: 8, 3: 9, 6: 7, 10: 8}),
-        (4, "Diana", {5: 8, 7: 8.5, 9: 7, 4: 8, 2: 6}),
-        (5, "Eve", {1: 9, 2: 9, 8: 8.5, 12: 8, 3: 8}),
-        (6, "Frank", {4: 9.2, 9: 8.8, 10: 8, 3: 7.5, 1: 6}),
+        (1, {1: 9, 2: 8.5, 3: 8, 8: 9, 12: 7}),
+        (2, {4: 9, 9: 9, 5: 6, 7: 5, 11: 4}),
+        (3, {1: 8.5, 2: 8, 3: 9, 6: 7, 10: 8}),
+        (4, {5: 8, 7: 8.5, 9: 7, 4: 8, 2: 6}),
+        (5, {1: 9, 2: 9, 8: 8.5, 12: 8, 3: 8}),
+        (6, {4: 9.2, 9: 8.8, 10: 8, 3: 7.5, 1: 6}),
     ]
     
-    for user_id, name, ratings in users_data:
-        user = User(user_id, name, {})
+    for user_id, ratings in users_data:
+        user = User(user_id, {})
         dataset.add_user(user)
         for movie_id, rating in ratings.items():
             dataset.add_rating(user_id, movie_id, rating)

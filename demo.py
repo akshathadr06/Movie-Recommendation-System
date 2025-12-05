@@ -30,7 +30,7 @@ def demo_module1_concept_learning():
     user_id = 1
     recommender = MovieRecommender(dataset, user_id)
     
-    print(f"User: {dataset.users[user_id].name}")
+    print(f"User ID: {user_id}")
     print(f"Movies they've rated:")
     for movie_id, rating in dataset.users[user_id].rated_movies.items():
         movie = dataset.movies[movie_id]
@@ -56,7 +56,7 @@ def demo_module2_rule_learning():
     user_id = 1
     recommender = MovieRecommender(dataset, user_id)
     
-    print(f"User: {dataset.users[user_id].name}")
+    print(f"User ID: {user_id}")
     print(f"\nLearned Recommendation Rules:")
     
     rules = recommender.rules
@@ -158,12 +158,12 @@ def demo_recommendations():
     for user_id in [1, 2, 3]:
         user = dataset.users[user_id]
         print(f"\n{'*'*70}")
-        print(f"GENERATING RECOMMENDATIONS FOR: {user.name}")
+        print(f"GENERATING RECOMMENDATIONS FOR USER: {user_id}")
         print(f"{'*'*70}\n")
         
         recommender = MovieRecommender(dataset, user_id)
         
-        print(f"User {user.name}'s Rating History:")
+        print(f"User {user_id}'s Rating History:")
         for movie_id, rating in user.rated_movies.items():
             movie = dataset.movies[movie_id]
             stars = "⭐" * int(rating)
@@ -199,7 +199,7 @@ def demo_interactive():
     user = dataset.users[user_id]
     recommender = MovieRecommender(dataset, user_id)
     
-    print(f"\nUsing test user: {user.name}")
+    print(f"\nUsing test user: {user_id}")
     
     while True:
         print_separator()
