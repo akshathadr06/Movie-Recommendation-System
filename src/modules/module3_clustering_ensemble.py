@@ -209,7 +209,7 @@ class EnsemblePredictor:
         self.adaboost.fit(X, y)
         self.is_trained = True
     
-    def predict_preference(self, movie: Dict) -> float:
+    def predict_preference(self, movie) -> float:
         """
         Predict probability user will like a movie using ensemble voting.
         
@@ -219,13 +219,23 @@ class EnsemblePredictor:
         if not self.is_trained:
             return 0.5
         
-        features = np.array([[
-            movie.get('rating', 5.0),
-            len(movie.get('genres', [])),
-            len(movie.get('cast', [])),
-            len(movie.get('keywords', [])),
-            movie.get('year', 2000),
-        ]])
+        # Handle both Movie objects and dicts
+        if hasattr(movie, 'rating'):
+            features = np.array([[
+                movie.rating,
+                len(movie.genres),
+                len(movie.cast),
+                len(movie.keywords),
+                movie.year,
+            ]])
+        else:
+            features = np.array([[
+                movie.get('rating', 5.0),
+                len(movie.get('genres', [])),
+                len(movie.get('cast', [])),
+                len(movie.get('keywords', [])),
+                movie.get('year', 2000),
+            ]])
         
         # Ensemble prediction (average)
         rf_pred = self.random_forest.predict_proba(features)[0][1]
